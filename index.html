@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Quran Reading Plan for Ramadan</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- Viewport Meta Tag -->
+     <style>
+         body {
+             font-family: Arial, sans-serif;
+             padding: 20px;
+             background-color: #f9f9f9;
+             margin: 0;
+             font-size: 16px; /* Adjust base font size */
+         }
+         table {
+             width: 100%;
+             border-collapse: collapse;
+             margin-top: 20px;
+         }
+         th, td {
+             border: 1px solid #ddd;
+             padding: 8px;
+             text-align: left;
+         }
+         th {
+             background-color: #04AA6D;
+             color: white;
+         }
+         td a {
+             color: #04AA6D;
+             text-decoration: none;
+             transition: transform 0.2s; /* Smooth transition for zoom effect */
+         }
+         td a:hover {
+             text-decoration: underline;
+             transform: scale(1.2); /* Zoom effect on hover */
+         }
+         select {
+             width: 100%;
+             padding: 12px; /* Larger padding for easier touch */
+             font-size: 1rem; /* Larger font size for better readability */
+         }
+
+         /* Responsive adjustments */
+         @media (max-width: 600px) {
+             body {
+                 font-size: 18px; /* Larger text for small screens */
+             }
+         }
+     </style>
+
+</head>
+<body>
+    <h1>Quran Reading Plan for Ramadan</h1>
+    <label for="dayPicker">Select Day:</label>
+    <select id="dayPicker" name="dayPicker"></select>
+    <div id="readingPlan">
+        <!-- Reading plan will be inserted here by JavaScript -->
+    </div>
+    <div id="prayerPlan" class="scrollable-table">
+        <!-- Prayer plan table will be inserted here by JavaScript -->
+    </div>
+
+   <script>
+       async function fetchChapters() {
+           const response = await fetch('https://api.quran.com/api/v4/chapters');
+           const data = await response.json();
+           return data.chapters.filter(chapter => chapter.id > 1); // Skipping chapter 1 as per your request
+       }
+
+       async function init() {
+           const chapters = await fetchChapters();
+           initDayPicker();
+           document.getElementById('dayPicker').addEventListener('change', async () => {
+               await updateReadingPlan(chapters);
+           });
+           await updateReadingPlan(chapters); // Update on initial load for Day 1
+       }
+
+       function initDayPicker() {
+           const dayPicker = document.getElementById('dayPicker');
+           for (let i = 1; i <= 30; i++) {
+               const option = document.createElement('option');
+               option.value = i;
+               option.innerText = `Day ${i}`;
+               dayPicker.appendChild(option);
+           }
+       }
+
+       async function updateReadingPlan(chapters) {
+           const day = parseInt(document.getElementById('dayPicker').value, 10);
+           const versesPerDay = 210;
+           const totalVersesRead = versesPerDay * (day - 1);
+           let cumulativeVersesRead = 0;
+           let planHtml = `<h2>Reading Plan for Day ${day}</h2>`;
+           let prayerPlanHtml = `<table><tr><th>Prayer Time</th><th>Reading</th></tr>`;
+
+           let chapterIndex = 0;
+           let verseOffset = totalVersesRead;
+
+           while (verseOffset >= chapters[chapterIndex].verses_count && chapterIndex < chapters.length) {
+               verseOffset -= chapters[chapterIndex].verses_count;
+               chapterIndex++;
+           }
+
+           for (let prayerIndex = 0; prayerIndex < 5; prayerIndex++) {
+               if (chapterIndex >= chapters.length) break;
+
+               let versesToRead = versesPerDay / 5;
+               let reading = '';
+               let startVerse = verseOffset + 1;
+
+               while (versesToRead > 0 && chapterIndex < chapters.length) {
+                   let availableVerses = chapters[chapterIndex].verses_count - verseOffset;
+                   let versesForCurrentChapter = Math.min(versesToRead, availableVerses);
+                   let endVerse = verseOffset + versesForCurrentChapter;
+                   reading += `<a href="https://quran.com/${chapters[chapterIndex].id}/${startVerse}" target="_blank">Chapter ${chapters[chapterIndex].id} (${chapters[chapterIndex].name_simple}): Verses ${startVerse} to ${endVerse}</a>`;
+
+                   versesToRead -= versesForCurrentChapter;
+                   cumulativeVersesRead += versesForCurrentChapter;
+                   if (versesToRead > 0) {
+                       chapterIndex++;
+                       verseOffset = 0;
+                       startVerse = 1;
+                       reading += '; ';
+                   } else {
+                       verseOffset += versesForCurrentChapter;
+                   }
+               }
+
+
+               const prayerTimes = ['Fajr', 'Dhuhr', 'Asr', 'Maghrib', 'Isha'];
+               prayerPlanHtml += `<tr><td>${prayerTimes[prayerIndex]}</td><td>${reading}</td></tr>`;
+           }
+           prayerPlanHtml += '</table>';
+
+           document.getElementById('readingPlan').innerHTML = planHtml;
+           document.getElementById('prayerPlan').innerHTML = prayerPlanHtml;
+       }
+
+       window.onload = init;
+   </script>
+</body>
+</html>
