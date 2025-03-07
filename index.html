@@ -40,6 +40,23 @@
              padding: 12px; /* Larger padding for easier touch */
              font-size: 1rem; /* Larger font size for better readability */
          }
+         .dua-section {
+             background-color: #f0f8ff;
+             border-left: 4px solid #04AA6D;
+             padding: 15px;
+             margin: 20px 0;
+             border-radius: 5px;
+         }
+         .dua-title {
+             font-weight: bold;
+             color: #04AA6D;
+             margin-bottom: 10px;
+         }
+         .signature {
+             margin-top: 30px;
+             font-style: italic;
+             color: #555;
+         }
 
          /* Responsive adjustments */
          @media (max-width: 600px) {
@@ -57,8 +74,37 @@
     <div id="readingPlan">
         <!-- Reading plan will be inserted here by JavaScript -->
     </div>
+    
+    <div class="dua-section">
+        <div class="dua-title">Dua Before Reading Quran:</div>
+        <p>"أَعُوذُ بِاللَّهِ مِنَ الشَّيْطَانِ الرَّجِيمِ"</p>
+        <p>A'udhu billahi minash shaytanir rajeem</p>
+        <p><i>I seek refuge in Allah from Satan, the rejected one.</i></p>
+        
+        <div class="dua-title">Dua After Reading Quran:</div>
+        <p>"صَدَقَ اللَّهُ الْعَظِيمُ"</p>
+        <p>Sadaqallahul Azeem</p>
+        <p><i>Allah the Almighty has spoken the truth.</i></p>
+    </div>
+    
     <div id="prayerPlan" class="scrollable-table">
         <!-- Prayer plan table will be inserted here by JavaScript -->
+    </div>
+    
+    <div class="dua-section">
+        <div class="dua-title">Dua for Ramadan:</div>
+        <p>"اللَّهُمَّ لَكَ صُمْتُ وَعَلَى رِزْقِكَ أَفْطَرْتُ"</p>
+        <p>Allahumma laka sumtu wa 'ala rizqika aftartu</p>
+        <p><i>O Allah, I fasted for You and I break my fast with Your sustenance.</i></p>
+        
+        <div class="dua-title">Dua for Breaking Fast:</div>
+        <p>"ذَهَبَ الظَّمَأُ وَابْتَلَّتِ الْعُرُوقُ وَثَبَتَ الْأَجْرُ إِنْ شَاءَ اللَّهُ"</p>
+        <p>Dhahabadh dhama-u wabtallatil 'urooqu, wa tha-batal ajru insha Allah</p>
+        <p><i>The thirst is gone, the veins are moistened, and the reward is confirmed, if Allah wills.</i></p>
+    </div>
+
+    <div class="signature">
+        Jazakallah ❤️ Asrar
     </div>
 
    <script>
@@ -88,7 +134,7 @@
        }
 
        async function updateReadingPlan(chapters) {
-           const day = parseInt(document.getElementById('dayPicker').value, 10);
+           const day = parseInt(document.getElementById('dayPicker').value, 10) || 1;
            const versesPerDay = 210;
            const totalVersesRead = versesPerDay * (day - 1);
            let cumulativeVersesRead = 0;
